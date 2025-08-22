@@ -7,6 +7,14 @@
 
 */
 
+void fillrect() {
+  // depending on the ledState blink on the screen differently 
+    if (ledState) display.fillRect(120, 50, 10, 10, WHITE); // (x_pos, y_pos, width, height, color)
+    else          display.fillRect(120, 50, 10, 10, SSD1306_INVERSE);
+  // show everything on the screen
+    display.display();
+}
+
 void drawVolumeBars(int level, int x, int y) {
   for (int i = 0; i < 5; i++) {
     int height = 4 + 3 * i; // progressively taller bars
@@ -51,11 +59,11 @@ void screenDrawStandard() {
 }
 
 void screenDrawEverything() {
-  //screenBuzzerTime();
   if (ScreenOK && somethingNew) {
     // update the screen only if something is new
     screenDrawStandard();
   }
+
 }
 
 void init_screen() {

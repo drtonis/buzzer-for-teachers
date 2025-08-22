@@ -6,6 +6,26 @@
   Buzzer
 
 */
+void blink() {
+  unsigned long currentMillis = millis();
+
+  if (currentMillis - previousMillisBlink >= BlinkInterval) {
+    // save the last time you blinked the LED
+    previousMillisBlink = currentMillis;
+
+    // if the LED is off turn it on and vice-versa:
+    if (ledState == false) {
+      ledState = true;
+    } else {
+      ledState = false;
+    }
+    // set the LED with the ledState of the variable:
+    digitalWrite(LedPin, ledState);
+
+    fillrect();
+  }
+}
+
 
 void TrackChangeButtons() {
   // go through all the buttons and check if one of them has been pressed
@@ -14,7 +34,7 @@ void TrackChangeButtons() {
     if (digitalRead(InPutButtons[button_index])) {
       // stop the current sound
       myDFPlayer.stop(); 
-      if (debugModeF) Serial.print("you have pressed Button "); Serial.println(button_index);
+      if (debugModeF) Serial.print("you have pressed Button "); Serial.println(button_index + 1);
       // if the new track number differs from the current one then we change it
       if (eepromTrack != button_index + 1) {
         // adjust the track number

@@ -17,9 +17,10 @@
   #include <EEPROM.h>
   #include "Fonts/FreeSans9pt7b.h"
   #include "Fonts/FreeSansBold18pt7b.h"
+  #include "avr/wdt.h" // watchdog
 // debugging mode
   bool debugModeE = false; // parameter to activate the serial communication
-  bool debugModeF = false; // parameter to activate the serial communication
+  bool debugModeF = true; // parameter to activate the serial communication
   bool debugModeM = false; // parameter to activate the serial communication
   bool debugModeD = false; // parameter to activate the serial communication
 // screen parameters
@@ -42,6 +43,7 @@
   const int volumePin[2] = {A7, A6}; // A6 and A7 are analog read only! 
   const int buzzerPin = 5;
   const int OutPutPins = 9;
+  const int LedPin = 13;
 
 // parameters
   const int maxEepromAdress = 100;
@@ -52,10 +54,13 @@
   bool somethingNew = true; // a help parameter to deterrmine if we have something new to display
   bool volumeAdjusted = true; // a help parameter to determine if we have changed the volume level
   bool buzzerPressed = false;
+  bool ledState = false;  // ledState used to set the LED
   unsigned long previousMillisVolume = 0; // will store the last time the Volume button was pressed
   unsigned long previousMillisBuzzer = 0; // will store the last time the Buzzer button was pressed
+  unsigned long previousMillisBlink = 0;  // will store last time LED was updated
   const int intervalVolumeChange = 2000; // interval at which to adjust the volume level in Eeporm
   const int intervalBuzzer = 5000; // interval at which the buzzer can be used
+  const int BlinkInterval = 1000;  // interval at which to blink (milliseconds)
 
 // include other functions
   #include "EEPROM_UTILS.h"
@@ -79,4 +84,12 @@ void loop() {
   CheckIfVolumeChanged();
   //playerSerialDetails(); // somehow crashes the I2C communication
   delay(100);
+  // blink
+  blink();
+  // Refresh watchdog (tell it we are alive)
+  wdt_reset();
+  //set up WDT interrupt
+  WDTCSR = (1 << WDCE) | (1 << WDE);
+  //Start watchdog timer with 4s prescaller
+  WDTCSR = (1 << WDIE) | (1 << WDE) | (1 << WDP3) | (1 << WDP0);
 }
